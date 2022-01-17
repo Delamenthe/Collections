@@ -1,12 +1,6 @@
 db = new Mongo().getDB('MyMongoDB');
 db.issues.remove({});
-const MongoClient = require('mongodb').MongoClient;
-MongoClient.connect('mongodb://localhost:27017/MyDB', function(err, db) {
-    db.collection('issues').find().toArray(function(err, docs) {
-        console.log('Result of find:', docs);
-        db.close();
-    });
-});
+
 db.issues.insert([
     {
         status: 'Open', owner: 'Ravan',
