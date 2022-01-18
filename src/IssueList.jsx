@@ -2,14 +2,12 @@ import React from 'react';
 import IssueAdd from './IssueAdd.jsx';
 import IssueFilter from './IssueFilter.jsx';
 import 'whatwg-fetch';
+import PropTypes from "prop-types";
 import { Link } from 'react-router-dom'
 
-function IssueRow(props) {
-  return (
+const IssueRow = (props) => (
     <tr>
-      <td><Link to={`/issues/${props.issue._id}`}>
-        {props.issue._id.substr(-8)}
-      </Link></td>
+      <td>{props.issue._id}</td>
       <td>{props.issue.status}</td>
       <td>{props.issue.owner}</td>
       <td>{props.issue.created.toDateString()}</td>
@@ -17,8 +15,12 @@ function IssueRow(props) {
       <td>{props.issue.completionDate ? props.issue.completionDate.toDateString() : ''}</td>
       <td>{props.issue.title}</td>
     </tr>
-  );
-}
+);
+
+IssueRow.propTypes = {
+  issue: PropTypes.object.isRequired,
+};
+
 
 function IssueTable(props) {
   const issueRows = props.issues.map((issue) => <IssueRow key={issue._id} issue={issue} />);
@@ -39,6 +41,10 @@ function IssueTable(props) {
     </table>
   );
 }
+
+IssueTable.propTypes = {
+  issues: PropTypes.array.isRequired,
+};
 
 export default class IssueList extends React.Component {
   constructor() {

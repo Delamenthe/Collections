@@ -1,5 +1,4 @@
 const path = require('path');
-const webpack = require('webpack');
 
 module.exports = {
     devtool: 'source-map',
@@ -26,14 +25,15 @@ module.exports = {
     },
     devServer: {
         static: path.resolve(__dirname,'static'),
-        hot: true,
         port: 8000,
+        historyApiFallback: true,
         proxy: {
-            "/api": {
-                target: 'http://localhost:3000',
-            }
+            '/api': {
+                target: 'http://localhost:3000/api/issues',
+                secure: false,
+            },
         }
-    },
+   },
     module: {
         rules: [
             {
