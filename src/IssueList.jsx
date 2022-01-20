@@ -3,12 +3,13 @@ import IssueAdd from './IssueAdd.jsx';
 import IssueFilter from './IssueFilter.jsx';
 import 'whatwg-fetch';
 import PropTypes from "prop-types";
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router-dom';
 
 const IssueRow = (props) => (
     <tr>
-      <td>{props.issue._id}</td>
-      <td>{props.issue.status}</td>
+        <td><Link to={`/issues/${props.issue._id}`}> {props.issue._id.substr(-4)}
+        </Link></td>
+        <td>{props.issue.status}</td>
       <td>{props.issue.owner}</td>
       <td>{props.issue.created.toDateString()}</td>
       <td>{props.issue.effort}</td>
@@ -20,7 +21,6 @@ const IssueRow = (props) => (
 IssueRow.propTypes = {
   issue: PropTypes.object.isRequired,
 };
-
 
 function IssueTable(props) {
   const issueRows = props.issues.map((issue) => <IssueRow key={issue._id} issue={issue} />);
@@ -47,60 +47,63 @@ IssueTable.propTypes = {
 };
 
 export default class IssueList extends React.Component {
-  constructor() {
-    super();
-    this.state = { issues: [] };
+    constructor() {
+        super();
+        this.state = { issues: [] };
 
-    this.createIssue = this.createIssue.bind(this);
-  }
+        this.createIssue = this.createIssue.bind(this);
+    }
 
-  componentDidMount() {
-    this.loadData();
-  }
+    componentDidMount() {
+        this.loadData();
+    }
 
-  loadData() {
-    fetch('/api/issues').then((response) => {
-      if (response.ok) {
-        response.json().then((data) => {
-          console.log('Total count of records:', data._metadata.total_count);
-          data.records.forEach((issue) => {
-            issue.created = new Date(issue.created);
-            if (issue.completionDate) { issue.completionDate = new Date(issue.completionDate); }
-          });
-          this.setState({ issues: data.records });
+    loadData() {
+        fetch('/api/issues').then(response => {
+            if (response.ok) {
+                response.json().then(data => {
+                    data.records.forEach(issue => {
+                        issue.created = new Date(issue.created);
+                        if (issue.completionDate) {
+                            issue.completionDate = new Date(issue.completionDate);
+                        }
+                    });
+                    this.setState({ issues: data.records });
+                });
+            } else {
+                response.json().then(error => {
+                    alert(`Failed to fetch issues ${error.message}`);
+                });
+            }
+        }).catch(err => {
+            alert(`Error in fetching data from server: ${err}`);
         });
-      } else {
-        response.json().then((error) => {
-          alert(`Failed to fetch issues:${error.message}`);
-        });
-      }
-    }).catch((err) => {
-      alert('Error in fetching data from server:', err);
-    });
-  }
+    }
 
-  createIssue(newIssue) {
-    fetch('/api/issues', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(newIssue),
-    }).then((response) => {
-      if (response.ok) {
-        response.json().then((updatedIssue) => {
-          updatedIssue.created = new Date(updatedIssue.created);
-          if (updatedIssue.completionDate) { updatedIssue.completionDate = new Date(updatedIssue.completionDate); }
-          const newIssues = this.state.issues.concat(updatedIssue);
-          this.setState({ issues: newIssues });
+    createIssue(newIssue) {
+        fetch('/api/issues', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newIssue),
+        }).then(response => {
+            if (response.ok) {
+                response.json().then(updatedIssue => {
+                    updatedIssue.created = new Date(updatedIssue.created);
+                    if (updatedIssue.completionDate) {
+                        updatedIssue.completionDate = new Date(updatedIssue.completionDate);
+                    }
+                    const newIssues = this.state.issues.concat(updatedIssue);
+                    this.setState({ issues: newIssues });
+                });
+            } else {
+                response.json().then(error => {
+                    alert(`Failed to add issue: ${error.message}`);
+                });
+            }
+        }).catch(err => {
+            alert(`Error in sending data to server: ${err.message}`);
         });
-      } else {
-        response.json().then((error) => {
-          alert(`Failed to add issue: ${error.message}`);
-        });
-      }
-    }).catch((err) => {
-      alert(`Error in sending data to server: ${err.message}`);
-    });
-  }
+    }
 
   render() {
     return (

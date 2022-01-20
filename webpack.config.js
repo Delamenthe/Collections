@@ -3,14 +3,14 @@ const path = require('path');
 module.exports = {
     devtool: 'source-map',
     entry: {
-        app: ['./src/App.jsx'],
+        app: './src/App.jsx',
         vendor: ['react','react-dom','whatwg-fetch', 'react-router'],
     },
     mode: 'development',
     output: {
         path: path.resolve(__dirname,'static'),
         filename: 'app.bundle.js',
-        chunkFilename: 'vendor.bundle.js',
+        chunkFilename: "vendor.bundle.js"
     },
     plugins: [],
     optimization: {
@@ -23,17 +23,6 @@ module.exports = {
             }
         }
     },
-    devServer: {
-        static: path.resolve(__dirname,'static'),
-        port: 8000,
-        historyApiFallback: true,
-        proxy: {
-            '/api': {
-                target: 'http://localhost:3000/api/issues',
-                secure: false,
-            },
-        }
-   },
     module: {
         rules: [
             {
@@ -48,8 +37,16 @@ module.exports = {
                 ]
             }
         ]
+    },
+    devServer: {
+        port: 8000,
+        static: path.join(__dirname,'static'),
+        proxy: {
+            'api/*': {
+                target: 'http://localhost:3000',
+            },
+        },
     }
-
 };
 
 
