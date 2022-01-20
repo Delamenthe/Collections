@@ -4,11 +4,14 @@ import { MongoClient } from 'mongodb';
 import Issue from './issue.js';
 import 'babel-polyfill';
 import SourceMapSupport from 'source-map-support';
+require('dotenv').config();
+const cors = require('cors');
 SourceMapSupport.install();
 
 const app = express();
 app.use(express.static('static'));
 app.use(bodyParser.json());
+app.use(cors())
 
 let db;
 
