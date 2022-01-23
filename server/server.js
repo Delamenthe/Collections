@@ -7,18 +7,27 @@ import SourceMapSupport from 'source-map-support';
 import {config} from "dotenv";
 
 import cors from "cors";
-
+let db;
 config();
 SourceMapSupport.install();
+const uri = process.env.MONGODB_URI;
+const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+client.connect(err => {
+    db = client.db('MyDB');
+    // perform actions on the collection object
+    client.close();
+});
+
+
 
 const app = express();
 app.use(express.static('static'));
 app.use(bodyParser.json());
 app.use(cors())
 
-let db;
 
-app.get('/api/issues', (req, res) => {
+
+app.get('https://personal-collections.herokuapp.com/api/issues', (req, res) => {
     const filter = {};
     if (req.query.status) filter.status = req.query.status;
     db.collection('issues').find().toArray()
@@ -32,7 +41,7 @@ app.get('/api/issues', (req, res) => {
       });
 });
 
-app.post('/api/issues', (req, res) => {
+app.post('https://personal-collections.herokuapp.com/api/issues', (req, res) => {
   const newIssue = req.body;
   newIssue.created = new Date();
   if (!newIssue.status) {
@@ -58,9 +67,3 @@ app.post('/api/issues', (req, res) => {
       });
 });
 
-MongoClient.connect('mongodb://localhost:27017', (err, client) => {
-  db = client.db('MyDB');
-  app.listen(3000, () => {
-    console.log('App started on port 3000');
-  });
-});

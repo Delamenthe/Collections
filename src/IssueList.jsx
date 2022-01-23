@@ -59,7 +59,7 @@ export default class IssueList extends React.Component {
     }
 
     loadData() {
-        fetch('/api/issues').then(response => {
+        fetch('https://personal-collections.herokuapp.com/api/issues').then(response => {
             if (response.ok) {
                 response.json().then(data => {
                     data.records.forEach(issue => {
@@ -81,7 +81,7 @@ export default class IssueList extends React.Component {
     }
 
     createIssue(newIssue) {
-        fetch('/api/issues', {
+        fetch('https://personal-collections.herokuapp.com/api/issues', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(newIssue),
